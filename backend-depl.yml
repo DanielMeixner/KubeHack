@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: router
+spec:
+  ports:
+    - port: 3001
+  selector:
+    app: calcbackend
+  type: LoadBalancer
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: calcbackend
+spec:
+  replicas: 5
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: calcbackend
+    spec:
+      containers:
+      - image: dmxacrmaster-microsoft.azurecr.io/calcbackend:v#{Build.BuildNumber}#
+        name: calcbackend
+        ports:
+        - containerPort: 3001  
+      imagePullSecrets:
+      - name: kuberegistry
